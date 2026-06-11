@@ -56,14 +56,30 @@ bot.on("message", async (message: Message) => {
   }
 });
 
+const BOT_PREFIX = "🤖 ";
+
 async function handleMessage(message: Message): Promise<void> {
-  // 忽略机器人自己发出的消息，避免自我循环
-  if (message.self()) return;
   // 只处理文本消息
   if (message.type() !== bot.Message.Type.Text) return;
 
   const text = message.text().trim();
   if (!text) return;
+
+  // 自己发的消息：仅当发给「文件传输助手」时作为测试会话回复，其余忽略
+  if (message.self()) {
+    const listener = message.listener();
+    if (!listener || listener.id !== "filehelper") return;
+    // 忽略机器人自己发出的回复（带 🤖 前缀），避免自我循环
+    if (text.startsWith(BOT_PREFIX.trim())) return;
+
+    const conversationId = "self:filehelper";
+    if (await handleCommand(conversationId, text, (reply) => listener.say(BOT_PREFIX + reply))) return;
+
+    log.info("Bot", "文件传输助手(测试) : %s", text);
+    const reply = await chat(conversationId, text);
+    await listener.say(BOT_PREFIX + reply);
+    return;
+  }
 
   const room = message.room();
   const talker = message.talker();
