@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+
+# Wechaty 登录缓存（含会话凭证，切勿提交）
+.wechaty/
+*.memory-card.json

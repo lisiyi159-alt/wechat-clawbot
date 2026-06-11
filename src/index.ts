@@ -1,0 +1,117 @@
+import { WechatyBuilder, type Message, type PuppetModuleName, ScanStatus, log } from "wechaty";
+import qrcodeTerminal from "qrcode-terminal";
+import { config } from "./config.js";
+import { chat, resetConversation } from "./claude.js";
+
+const bot = WechatyBuilder.build({
+  name: "wechat-clawbot",
+  puppet: config.puppet as PuppetModuleName,
+});
+
+bot.on("scan", (qrcode, status) => {
+  if (status === ScanStatus.Waiting || status === ScanStatus.Timeout) {
+    qrcodeTerminal.generate(qrcode, { small: true });
+    const url = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`;
+    log.info("Bot", "请用微信扫描上方二维码登录。若终端二维码无法识别，可访问：%s", url);
+  } else {
+    log.info("Bot", "扫码状态：%s", ScanStatus[status]);
+  }
+});
+
+bot.on("login", (user) => {
+  log.info("Bot", "✅ 登录成功：%s", user.name());
+});
+
+bot.on("logout", (user) => {
+  log.info("Bot", "已登出：%s", user.name());
+});
+
+bot.on("error", (e) => {
+  log.error("Bot", "运行出错：%s", (e as Error).message);
+});
+
+bot.on("message", async (message: Message) => {
+  try {
+    await handleMessage(message);
+  } catch (err) {
+    log.error("Bot", "处理消息失败：%s", (err as Error).message);
+  }
+});
+
+async function handleMessage(message: Message): Promise<void> {
+  // 忽略机器人自己发出的消息，避免自我循环
+  if (message.self()) return;
+  // 只处理文本消息
+  if (message.type() !== bot.Message.Type.Text) return;
+
+  const text = message.text().trim();
+  if (!text) return;
+
+  const room = message.room();
+  const talker = message.talker();
+
+  // 群聊：默认只在被 @ 时回复
+  if (room) {
+    if (config.groupReplyOnMentionOnly) {
+      const mentioned = await message.mentionSelf();
+      if (!mentioned) return;
+    }
+    const cleanText = await stripMention(message, text);
+    if (!cleanText) return;
+
+    const conversationId = `room:${room.id}:${talker.id}`;
+    if (await handleCommand(conversationId, cleanText, (reply) => message.say(reply))) return;
+
+    log.info("Bot", "群聊[%s] %s: %s", await room.topic(), talker.name(), cleanText);
+    const reply = await chat(conversationId, cleanText);
+    // 在群里回复时 @ 提问者
+    await message.say(reply);
+    return;
+  }
+
+  // 私聊
+  if (!config.replyPrivate) return;
+
+  const conversationId = `contact:${talker.id}`;
+  if (await handleCommand(conversationId, text, (reply) => message.say(reply))) return;
+
+  log.info("Bot", "私聊 %s: %s", talker.name(), text);
+  const reply = await chat(conversationId, text);
+  await message.say(reply);
+}
+
+/** 去掉群聊消息里 @机器人 的部分，得到真正的提问内容。 */
+async function stripMention(message: Message, text: string): Promise<string> {
+  const self = message.wechaty.currentUser;
+  const name = self.name();
+  // 微信 @ 文本形如 "@机器人 你好"，@ 名后通常带一个特殊空格
+  return text
+    .replace(new RegExp(`@${name}[\\u2005\\s]?`, "g"), "")
+    .trim();
+}
+
+/** 处理「/reset」「清空记忆」等指令，返回 true 表示已处理、无需再走对话。 */
+async function handleCommand(
+  conversationId: string,
+  text: string,
+  say: (reply: string) => Promise<unknown>,
+): Promise<boolean> {
+  const normalized = text.toLowerCase();
+  if (normalized === "/reset" || text === "清空记忆" || text === "重置对话") {
+    resetConversation(conversationId);
+    await say("已清空本会话的对话记忆，我们重新开始吧～");
+    return true;
+  }
+  return false;
+}
+
+async function main(): Promise<void> {
+  log.info("Bot", "启动中… 使用模型：%s，puppet：%s", config.model, config.puppet);
+  await bot.start();
+  log.info("Bot", "已启动，等待扫码登录。");
+}
+
+main().catch((err) => {
+  log.error("Bot", "启动失败：%s", (err as Error).message);
+  process.exit(1);
+});
