@@ -1,3 +1,4 @@
+import { exec } from "node:child_process";
 import { WechatyBuilder, type Message, type PuppetModuleName, ScanStatus, log } from "wechaty";
 import qrcodeTerminal from "qrcode-terminal";
 import { config } from "./config.js";
@@ -8,11 +9,28 @@ const bot = WechatyBuilder.build({
   puppet: config.puppet as PuppetModuleName,
 });
 
+/** 用系统默认浏览器打开链接（跨平台），方便直接扫描二维码。 */
+function openInBrowser(url: string): void {
+  const platform = process.platform;
+  const command =
+    platform === "win32" ? `start "" "${url}"` : platform === "darwin" ? `open "${url}"` : `xdg-open "${url}"`;
+  exec(command, { windowsHide: true }, () => {
+    /* 打开失败也无所谓，终端里仍打印了链接 */
+  });
+}
+
+let lastQrcode = "";
+
 bot.on("scan", (qrcode, status) => {
   if (status === ScanStatus.Waiting || status === ScanStatus.Timeout) {
     qrcodeTerminal.generate(qrcode, { small: true });
     const url = `https://wechaty.js.org/qrcode/${encodeURIComponent(qrcode)}`;
-    log.info("Bot", "请用微信扫描上方二维码登录。若终端二维码无法识别，可访问：%s", url);
+    log.info("Bot", "请用微信扫描二维码登录。已自动在浏览器打开，若没弹出可手动访问：%s", url);
+    // 每出现一个新二维码就自动在浏览器打开，无需手动复制链接
+    if (qrcode !== lastQrcode) {
+      lastQrcode = qrcode;
+      openInBrowser(url);
+    }
   } else {
     log.info("Bot", "扫码状态：%s", ScanStatus[status]);
   }
