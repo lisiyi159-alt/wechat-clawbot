@@ -1,7 +1,7 @@
 import { WechatyBuilder, type Message, type PuppetModuleName, ScanStatus, log } from "wechaty";
 import qrcodeTerminal from "qrcode-terminal";
 import { config } from "./config.js";
-import { chat, resetConversation } from "./claude.js";
+import { chat, resetConversation } from "./llm.js";
 
 const bot = WechatyBuilder.build({
   name: "wechat-clawbot",
@@ -106,7 +106,8 @@ async function handleCommand(
 }
 
 async function main(): Promise<void> {
-  log.info("Bot", "启动中… 使用模型：%s，puppet：%s", config.model, config.puppet);
+  const model = config.provider === "claude" ? config.claudeModel : config.deepseekModel;
+  log.info("Bot", "启动中… 提供商：%s，模型：%s，puppet：%s", config.provider, model, config.puppet);
   await bot.start();
   log.info("Bot", "已启动，等待扫码登录。");
 }
