@@ -6,6 +6,7 @@ Page({
     trip: null,
     loading: true,
     isAdmin: false,
+    shareImage: '', // 转发卡片用的封面图（https 临时链接）
   },
 
   onLoad(options) {
@@ -21,14 +22,33 @@ Page({
       })
       .then((res) => {
         if (res && res.result && res.result.ok) {
-          this.setData({ trip: res.result.data });
-          wx.setNavigationBarTitle({
-            title: res.result.data.title || '旅行',
-          });
+          const trip = res.result.data;
+          this.setData({ trip });
+          wx.setNavigationBarTitle({ title: trip.title || '旅行' });
+          // 把封面云文件 ID 换成 https 临时链接，供转发卡片使用
+          if (trip.cover) {
+            wx.cloud
+              .getTempFileURL({ fileList: [trip.cover] })
+              .then((r) => {
+                const url = r.fileList && r.fileList[0] && r.fileList[0].tempFileURL;
+                if (url) this.setData({ shareImage: url });
+              })
+              .catch(() => {});
+          }
         }
       })
       .catch(() => wx.showToast({ title: '加载失败', icon: 'none' }))
       .then(() => this.setData({ loading: false }));
+  },
+
+  // 转发这段旅行给家人，卡片带封面图和标题
+  onShareAppMessage() {
+    const t = this.data.trip || {};
+    return {
+      title: t.title || '我们的旅行手账',
+      path: `/pages/detail/detail?id=${this.id}`,
+      imageUrl: this.data.shareImage || '',
+    };
   },
 
   // 点击照片大图预览

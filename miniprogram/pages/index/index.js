@@ -21,10 +21,6 @@ Page({
     app
       .ensureLogin()
       .then(({ role }) => {
-        if (role === 'guest') {
-          wx.redirectTo({ url: '/pages/access/access' });
-          return null;
-        }
         this.setData({ isAdmin: role === 'admin' });
         return wx.cloud.callFunction({
           name: 'trips',
@@ -56,5 +52,15 @@ Page({
 
   goPublish() {
     wx.navigateTo({ url: '/pages/publish/publish' });
+  },
+
+  // 转发给家人（聊天/群）
+  onShareAppMessage() {
+    const cover = this.data.trips.length ? this.data.trips[0].cover : '';
+    return {
+      title: '我们的家庭旅行手账',
+      path: '/pages/index/index',
+      imageUrl: cover || '',
+    };
   },
 });

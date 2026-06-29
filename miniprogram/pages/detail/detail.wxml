@@ -22,6 +22,7 @@
   </view>
 
   <view class="actions">
+    <button class="action share" open-type="share">↗ 分享给家人</button>
     <button class="action export" bindtap="exportTrip">⬇ 导出留存</button>
     <button class="action edit" wx:if="{{isAdmin}}" bindtap="edit">编辑</button>
   </view>

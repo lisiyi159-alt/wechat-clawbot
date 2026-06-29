@@ -2,10 +2,10 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
-// 返回当前用户的 openid 和角色：
+// 访问控制交给「微信小程序白名单（体验成员）」——能打开的就是受信任的家人。
+// 这里只区分谁能发布：
 //   admin  —— 第一个进入小程序的人（你），可发布/编辑/删除
-//   member —— 通过邀请码加入的家人，可查看
-//   guest  —— 尚未获得权限，需输入邀请码
+//   member —— 其余家人，自动加入，可查看 / 导出
 exports.main = async () => {
   const { OPENID } = cloud.getWXContext();
   const members = db.collection('members');
@@ -15,14 +15,11 @@ exports.main = async () => {
     return { openid: OPENID, role: mine.data[0].role || 'member' };
   }
 
-  // 引导：如果一个成员都还没有，第一个进入的人自动成为管理员
+  // 第一个进入的人成为管理员，其余自动登记为家庭成员
   const total = await members.count();
-  if (total.total === 0) {
-    await members.add({
-      data: { openid: OPENID, role: 'admin', createdAt: db.serverDate() },
-    });
-    return { openid: OPENID, role: 'admin' };
-  }
-
-  return { openid: OPENID, role: 'guest' };
+  const role = total.total === 0 ? 'admin' : 'member';
+  await members.add({
+    data: { openid: OPENID, role, createdAt: db.serverDate() },
+  });
+  return { openid: OPENID, role };
 };

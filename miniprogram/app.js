@@ -3,7 +3,7 @@ const { ENV_ID } = require('./config.js');
 App({
   globalData: {
     openid: '',
-    role: 'guest', // guest（无权限） | member（家人，可看） | admin（你，可发布）
+    role: 'member', // member（家人，可看）| admin（你，可发布）
   },
 
   onLaunch() {
@@ -33,10 +33,5 @@ App({
         throw err;
       });
     return this._loginPromise;
-  },
-
-  // 清掉登录缓存（例如刚通过邀请码加入后，需要重新拉取角色）
-  resetLogin() {
-    this._loginPromise = null;
   },
 });

@@ -47,6 +47,11 @@
   border-radius: 12rpx;
 }
 
+.action.share {
+  background: #2563eb;
+  color: #fff;
+}
+
 .action.export {
   background: #10b981;
   color: #fff;
