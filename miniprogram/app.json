@@ -1,8 +1,10 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/map/map",
     "pages/detail/detail",
-    "pages/publish/publish"
+    "pages/publish/publish",
+    "pages/entry/entry"
   ],
   "window": {
     "navigationBarBackgroundColor": "#1f2937",
@@ -10,6 +12,21 @@
     "navigationBarTitleText": "旅行手账",
     "backgroundColor": "#f5f6f8"
   },
+  "tabBar": {
+    "color": "#9ca3af",
+    "selectedColor": "#2563eb",
+    "backgroundColor": "#ffffff",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "手账" },
+      { "pagePath": "pages/map/map", "text": "足迹" }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于在地图上标记你去过的地方"
+    }
+  },
+  "requiredPrivateInfos": ["chooseLocation"],
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

@@ -1,0 +1,16 @@
+<view class="map-wrap">
+  <map
+    class="map"
+    longitude="{{longitude}}"
+    latitude="{{latitude}}"
+    scale="{{scale}}"
+    markers="{{markers}}"
+    bindmarkertap="tapMarker"
+    enable-zoom
+    enable-scroll
+  ></map>
+
+  <view wx:if="{{!loading && !hasPoints}}" class="tip">
+    发布旅行时点「地图选点」，去过的地方就会出现在这里 🗺️
+  </view>
+</view>

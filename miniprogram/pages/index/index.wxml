@@ -3,7 +3,7 @@
 
   <view wx:elif="{{trips.length === 0}}" class="empty">
     <text>还没有旅行记录</text>
-    <text class="sub" wx:if="{{isAdmin}}">点右下角 ＋ 写下第一段旅程</text>
+    <text class="sub">点右下角 ＋ 写下第一段旅程</text>
   </view>
 
   <view class="list" wx:else>
@@ -31,5 +31,5 @@
     </view>
   </view>
 
-  <view class="fab" wx:if="{{isAdmin}}" bindtap="goPublish">＋</view>
+  <view class="fab" bindtap="goPublish">＋</view>
 </view>

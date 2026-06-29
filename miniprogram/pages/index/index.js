@@ -5,7 +5,6 @@ Page({
   data: {
     trips: [],
     loading: true,
-    isAdmin: false,
   },
 
   onShow() {
@@ -20,13 +19,9 @@ Page({
     this.setData({ loading: true });
     app
       .ensureLogin()
-      .then(({ role }) => {
-        this.setData({ isAdmin: role === 'admin' });
-        return wx.cloud.callFunction({
-          name: 'trips',
-          data: { action: 'list' },
-        });
-      })
+      .then(() =>
+        wx.cloud.callFunction({ name: 'trips', data: { action: 'list' } })
+      )
       .then((res) => {
         if (res && res.result && res.result.ok) {
           this.setData({ trips: res.result.data });

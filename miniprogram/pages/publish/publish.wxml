@@ -12,13 +12,17 @@
 
   <view class="field">
     <text class="label">地点</text>
-    <input
-      class="input"
-      placeholder="城市 / 景点（可选）"
-      value="{{location}}"
-      data-field="location"
-      bindinput="onInput"
-    />
+    <view class="loc-row">
+      <input
+        class="input loc-input"
+        placeholder="城市 / 景点（可选）"
+        value="{{location}}"
+        data-field="location"
+        bindinput="onInput"
+      />
+      <view class="loc-btn" bindtap="chooseLocation">📍地图选点</view>
+    </view>
+    <text class="hint" wx:if="{{latitude}}">已定位，会出现在「足迹」地图上</text>
   </view>
 
   <view class="field">
@@ -29,12 +33,12 @@
   </view>
 
   <view class="field">
-    <text class="label">游记</text>
+    <text class="label">游记（会署上你的称呼）</text>
     <textarea
       class="textarea"
       placeholder="写下这次旅行的故事和感受…"
-      value="{{content}}"
-      data-field="content"
+      value="{{text}}"
+      data-field="text"
       bindinput="onInput"
       auto-height
     />

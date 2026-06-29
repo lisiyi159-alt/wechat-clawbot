@@ -4,83 +4,146 @@ const { markBackupDone } = require('../../utils/backup.js');
 Page({
   data: {
     trip: null,
+    entries: [], // 带 mine / isFirst / index 标记，便于渲染
     loading: true,
-    isAdmin: false,
-    shareImage: '', // 转发卡片用的封面图（https 临时链接）
+    canEdit: false, // 是否可编辑这段旅行（创建者或管理员）
+    shareImage: '', // 转发卡片封面（https 临时链接）
+  },
+
+  onShow() {
+    // 从补充/编辑页返回时刷新
+    if (this.id) this.fetch();
   },
 
   onLoad(options) {
     this.id = options.id;
     app
       .ensureLogin()
-      .then(({ role }) => {
-        this.setData({ isAdmin: role === 'admin' });
-        return wx.cloud.callFunction({
-          name: 'trips',
-          data: { action: 'get', id: this.id },
-        });
-      })
-      .then((res) => {
-        if (res && res.result && res.result.ok) {
-          const trip = res.result.data;
-          this.setData({ trip });
-          wx.setNavigationBarTitle({ title: trip.title || '旅行' });
-          // 把封面云文件 ID 换成 https 临时链接，供转发卡片使用
-          if (trip.cover) {
-            wx.cloud
-              .getTempFileURL({ fileList: [trip.cover] })
-              .then((r) => {
-                const url = r.fileList && r.fileList[0] && r.fileList[0].tempFileURL;
-                if (url) this.setData({ shareImage: url });
-              })
-              .catch(() => {});
-          }
-        }
-      })
-      .catch(() => wx.showToast({ title: '加载失败', icon: 'none' }))
+      .then(() => this.fetch())
       .then(() => this.setData({ loading: false }));
   },
 
-  // 转发这段旅行给家人，卡片带封面图和标题
-  onShareAppMessage() {
-    const t = this.data.trip || {};
-    return {
-      title: t.title || '我们的旅行手账',
-      path: `/pages/detail/detail?id=${this.id}`,
-      imageUrl: this.data.shareImage || '',
-    };
+  fetch() {
+    return wx.cloud
+      .callFunction({ name: 'trips', data: { action: 'get', id: this.id } })
+      .then((res) => {
+        if (!res || !res.result || !res.result.ok) return;
+        const trip = res.result.data;
+        const my = app.globalData.openid;
+        const entries = (trip.entries || []).map((e, i) => ({
+          ...e,
+          mine: e.openid === my,
+          isFirst: i === 0,
+          index: i,
+        }));
+        this.setData({
+          trip,
+          entries,
+          canEdit: trip.openid === my || app.globalData.role === 'admin',
+        });
+        wx.setNavigationBarTitle({ title: trip.title || '旅行' });
+
+        if (trip.cover) {
+          wx.cloud
+            .getTempFileURL({ fileList: [trip.cover] })
+            .then((r) => {
+              const url =
+                r.fileList && r.fileList[0] && r.fileList[0].tempFileURL;
+              if (url) this.setData({ shareImage: url });
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => wx.showToast({ title: '加载失败', icon: 'none' }));
   },
 
-  // 点击照片大图预览
   preview(e) {
-    wx.previewImage({
-      current: e.currentTarget.dataset.src,
-      urls: this.data.trip.photos,
-    });
+    const { urls, src } = e.currentTarget.dataset;
+    wx.previewImage({ current: src, urls });
   },
 
-  edit() {
+  // 编辑整段旅行（含自己的主记录）
+  editTrip() {
     wx.navigateTo({ url: `/pages/publish/publish?id=${this.id}` });
   },
 
+  // 我也补充
+  addEntry() {
+    wx.navigateTo({ url: `/pages/entry/entry?id=${this.id}` });
+  },
+
+  // 编辑自己的某条记录
+  editEntry(e) {
+    const i = e.currentTarget.dataset.index;
+    wx.navigateTo({ url: `/pages/entry/entry?id=${this.id}&index=${i}` });
+  },
+
+  // 删除自己的补充记录
+  deleteEntry(e) {
+    const i = e.currentTarget.dataset.index;
+    wx.showModal({
+      title: '删除这条记录？',
+      success: (r) => {
+        if (!r.confirm) return;
+        wx.cloud
+          .callFunction({
+            name: 'trips',
+            data: { action: 'deleteEntry', id: this.id, index: i },
+          })
+          .then((res) => {
+            if (res.result.ok) this.fetch();
+            else wx.showToast({ title: res.result.msg || '删除失败', icon: 'none' });
+          });
+      },
+    });
+  },
+
+  // 删除整段旅行（创建者 / 管理员）
+  deleteTrip() {
+    wx.showModal({
+      title: '删除整段旅行？',
+      content: '照片和所有人的记录都会一起删除，且不可恢复。',
+      success: (r) => {
+        if (!r.confirm) return;
+        wx.cloud
+          .callFunction({
+            name: 'trips',
+            data: { action: 'delete', id: this.id },
+          })
+          .then((res) => {
+            if (res.result.ok) {
+              wx.showToast({ title: '已删除' });
+              setTimeout(() => wx.navigateBack(), 600);
+            } else {
+              wx.showToast({ title: res.result.msg || '删除失败', icon: 'none' });
+            }
+          });
+      },
+    });
+  },
+
   // ============ 一键导出留存 ============
-  // 把照片保存到手机相册，并把文字复制到剪贴板
   async exportTrip() {
     const trip = this.data.trip;
     if (!trip) return;
 
-    const text = [
+    const lines = [
       trip.title,
       trip.date ? `日期：${trip.date}` : '',
       trip.location ? `地点：${trip.location}` : '',
       '',
-      trip.content || '',
-    ]
-      .filter((s) => s !== '')
-      .join('\n');
-    wx.setClipboardData({ data: text, success: () => {}, fail: () => {} });
+    ];
+    const photos = [];
+    (trip.entries || []).forEach((e, i) => {
+      lines.push(`${e.name}${i === 0 ? '：' : '补充：'}${e.text || ''}`);
+      (e.photos || []).forEach((p) => photos.push(p));
+    });
+    wx.setClipboardData({
+      data: lines.filter((s) => s !== '').join('\n'),
+      success: () => {},
+      fail: () => {},
+    });
 
-    const photos = trip.photos || [];
     if (photos.length === 0) {
       wx.showModal({
         title: '已复制文字',
@@ -107,10 +170,10 @@ Page({
         content: `已保存 ${saved} 张照片到手机相册，文字也已复制到剪贴板，可粘贴到备忘录长期保存。`,
         showCancel: false,
       });
-    } catch (e) {
+    } catch (err) {
       wx.hideLoading();
-      console.error(e);
-      const denied = e.errMsg && e.errMsg.indexOf('auth') > -1;
+      console.error(err);
+      const denied = err.errMsg && err.errMsg.indexOf('auth') > -1;
       if (denied) {
         wx.showModal({
           title: '需要相册权限',
@@ -124,5 +187,15 @@ Page({
         wx.showToast({ title: '导出中断，请重试', icon: 'none' });
       }
     }
+  },
+
+  // 转发给家人
+  onShareAppMessage() {
+    const t = this.data.trip || {};
+    return {
+      title: t.title || '我们的旅行手账',
+      path: `/pages/detail/detail?id=${this.id}`,
+      imageUrl: this.data.shareImage || '',
+    };
   },
 });

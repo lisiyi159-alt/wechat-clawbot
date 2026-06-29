@@ -15,36 +15,80 @@
   gap: 24rpx;
 }
 
-.content {
+.entries {
   margin-top: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.entry {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.who {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.entry-ops {
+  display: flex;
+  gap: 24rpx;
+}
+
+.op {
+  font-size: 26rpx;
+  color: #6b7280;
+}
+
+.op.del {
+  color: #ef4444;
+}
+
+.entry-text {
+  margin-top: 12rpx;
   line-height: 1.7;
   white-space: pre-wrap;
   color: #374151;
 }
 
-.photos {
-  margin-top: 32rpx;
+.entry-photos {
+  margin-top: 20rpx;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .photo {
   width: 100%;
-  border-radius: 16rpx;
+  border-radius: 12rpx;
   background: #e5e7eb;
 }
 
 .actions {
-  margin-top: 48rpx;
+  margin-top: 32rpx;
   display: flex;
-  gap: 24rpx;
+  gap: 20rpx;
 }
 
 .action {
   flex: 1;
-  font-size: 30rpx;
+  font-size: 28rpx;
   border-radius: 12rpx;
+  padding: 6rpx 0;
+}
+
+.action.add {
+  background: #f59e0b;
+  color: #fff;
 }
 
 .action.share {
@@ -60,4 +104,9 @@
 .action.edit {
   background: #f3f4f6;
   color: #374151;
+}
+
+.action.danger {
+  background: #fef2f2;
+  color: #ef4444;
 }

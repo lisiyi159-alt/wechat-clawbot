@@ -7,24 +7,46 @@
     </view>
   </view>
 
-  <view class="content" wx:if="{{trip.content}}">{{trip.content}}</view>
-
-  <view class="photos">
-    <image
-      wx:for="{{trip.photos}}"
-      wx:key="*this"
-      class="photo"
-      src="{{item}}"
-      mode="widthFix"
-      bindtap="preview"
-      data-src="{{item}}"
-    />
+  <!-- 多位家人的接力记录 -->
+  <view class="entries">
+    <view class="entry" wx:for="{{entries}}" wx:key="index" wx:for-item="entry">
+      <view class="entry-head">
+        <text class="who">{{entry.name}}{{entry.isFirst ? '：' : ' 补充：'}}</text>
+        <view class="entry-ops" wx:if="{{entry.mine}}">
+          <text class="op" data-index="{{entry.index}}" bindtap="editEntry">编辑</text>
+          <text
+            wx:if="{{!entry.isFirst}}"
+            class="op del"
+            data-index="{{entry.index}}"
+            bindtap="deleteEntry"
+          >删除</text>
+        </view>
+      </view>
+      <view class="entry-text" wx:if="{{entry.text}}">{{entry.text}}</view>
+      <view class="entry-photos" wx:if="{{entry.photos.length}}">
+        <image
+          wx:for="{{entry.photos}}"
+          wx:for-item="p"
+          wx:key="*this"
+          class="photo"
+          src="{{p}}"
+          mode="widthFix"
+          bindtap="preview"
+          data-src="{{p}}"
+          data-urls="{{entry.photos}}"
+        />
+      </view>
+    </view>
   </view>
 
   <view class="actions">
+    <button class="action add" bindtap="addEntry">✍ 我也补充</button>
     <button class="action share" open-type="share">↗ 分享给家人</button>
     <button class="action export" bindtap="exportTrip">⬇ 导出留存</button>
-    <button class="action edit" wx:if="{{isAdmin}}" bindtap="edit">编辑</button>
+  </view>
+  <view class="actions" wx:if="{{canEdit}}">
+    <button class="action edit" bindtap="editTrip">编辑旅行</button>
+    <button class="action danger" bindtap="deleteTrip">删除整段</button>
   </view>
 </view>
 

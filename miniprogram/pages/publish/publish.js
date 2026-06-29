@@ -1,4 +1,5 @@
 const app = getApp();
+const { uploadImages } = require('../../utils/upload.js');
 
 function today() {
   const d = new Date();
@@ -11,10 +12,12 @@ Page({
     id: '',
     title: '',
     location: '',
+    latitude: null,
+    longitude: null,
     date: today(),
-    content: '',
-    photos: [], // 已在云端的 fileID（编辑时回填）
-    localPhotos: [], // 本次新选、待上传的本地路径
+    text: '',
+    photos: [], // 已在云端的 fileID
+    localPhotos: [], // 待上传的本地路径
     submitting: false,
   },
 
@@ -27,12 +30,20 @@ Page({
         .then((res) => {
           if (res.result.ok) {
             const t = res.result.data;
+            const entries = t.entries || [];
+            // 取自己的主记录（创建者就是 entries[0]）
+            const mine =
+              entries.find((e) => e.openid === app.globalData.openid) ||
+              entries[0] ||
+              {};
             this.setData({
               title: t.title || '',
               location: t.location || '',
+              latitude: t.latitude != null ? t.latitude : null,
+              longitude: t.longitude != null ? t.longitude : null,
               date: t.date || today(),
-              content: t.content || '',
-              photos: t.photos || [],
+              text: mine.text || '',
+              photos: mine.photos || [],
             });
           }
         });
@@ -45,6 +56,22 @@ Page({
 
   onDateChange(e) {
     this.setData({ date: e.detail.value });
+  },
+
+  // 地图选点（带经纬度，足迹页才能标在地图上）
+  chooseLocation() {
+    wx.chooseLocation({
+      success: (res) => {
+        this.setData({
+          location: res.name || res.address || this.data.location,
+          latitude: res.latitude,
+          longitude: res.longitude,
+        });
+      },
+      fail: () => {
+        // 用户取消或无接口权限时，可继续手填地点名（只是不上地图）
+      },
+    });
   },
 
   chooseImage() {
@@ -71,45 +98,35 @@ Page({
     this.setData({ photos: arr });
   },
 
-  // 逐张上传本地图片到云存储，返回 fileID 列表
-  async uploadAll() {
-    const openid = app.globalData.openid || 'anon';
-    const ids = [];
-    for (const path of this.data.localPhotos) {
-      const m = path.match(/\.(\w+)$/);
-      const ext = m ? m[1] : 'jpg';
-      const cloudPath = `trips/${openid}/${Date.now()}-${Math.floor(
-        Math.random() * 1e6
-      )}.${ext}`;
-      const r = await wx.cloud.uploadFile({ cloudPath, filePath: path });
-      ids.push(r.fileID);
-    }
-    return ids;
-  },
-
   async submit() {
     if (!this.data.title.trim()) {
       wx.showToast({ title: '先写个标题吧', icon: 'none' });
       return;
     }
+    const name = await app.ensureName();
+    if (!name) {
+      wx.showToast({ title: '请先设置你的称呼', icon: 'none' });
+      return;
+    }
+
     this.setData({ submitting: true });
     wx.showLoading({ title: '保存中…', mask: true });
     try {
-      const newIds = await this.uploadAll();
+      const newIds = await uploadImages(this.data.localPhotos, app.globalData.openid);
       const photos = this.data.photos.concat(newIds);
-      const res = await wx.cloud.callFunction({
-        name: 'trips',
-        data: {
-          action: 'save',
-          id: this.data.id || undefined,
-          title: this.data.title,
-          location: this.data.location,
-          date: this.data.date,
-          content: this.data.content,
-          photos,
-          cover: photos[0] || '',
-        },
-      });
+      const payload = {
+        title: this.data.title,
+        location: this.data.location,
+        latitude: this.data.latitude,
+        longitude: this.data.longitude,
+        date: this.data.date,
+        text: this.data.text,
+        photos,
+      };
+      const data = this.data.id
+        ? { action: 'update', id: this.data.id, ...payload }
+        : { action: 'create', ...payload };
+      const res = await wx.cloud.callFunction({ name: 'trips', data });
       wx.hideLoading();
       if (res.result.ok) {
         wx.showToast({ title: '已保存' });
