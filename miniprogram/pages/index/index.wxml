@@ -6,26 +6,34 @@
     <text class="sub">点右下角 ＋ 写下第一段旅程</text>
   </view>
 
-  <view class="list" wx:else>
-    <view
-      class="card"
-      wx:for="{{trips}}"
-      wx:key="_id"
-      bindtap="goDetail"
-      data-id="{{item._id}}"
-    >
-      <image
-        wx:if="{{item.cover}}"
-        class="cover"
-        src="{{item.cover}}"
-        mode="aspectFill"
-      />
-      <view wx:else class="cover placeholder">🏞️</view>
-      <view class="card-body">
-        <view class="title">{{item.title}}</view>
-        <view class="meta">
-          <text wx:if="{{item.location}}">📍{{item.location}}</text>
-          <text wx:if="{{item.date}}" class="date">{{item.date}}</text>
+  <view class="groups" wx:else>
+    <view class="group" wx:for="{{groups}}" wx:key="year" wx:for-item="group">
+      <view class="group-head">
+        <text class="year">{{group.year}}</text>
+        <text class="count">{{group.items.length}} 段旅行</text>
+      </view>
+      <view class="list">
+        <view
+          class="card"
+          wx:for="{{group.items}}"
+          wx:key="_id"
+          bindtap="goDetail"
+          data-id="{{item._id}}"
+        >
+          <image
+            wx:if="{{item.cover}}"
+            class="cover"
+            src="{{item.cover}}"
+            mode="aspectFill"
+          />
+          <view wx:else class="cover placeholder">🏞️</view>
+          <view class="card-body">
+            <view class="title">{{item.title}}</view>
+            <view class="meta">
+              <text wx:if="{{item.location}}">📍{{item.location}}</text>
+              <text wx:if="{{item.date}}" class="date">{{item.date}}</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>

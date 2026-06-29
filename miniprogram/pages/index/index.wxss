@@ -2,6 +2,27 @@
   padding: 24rpx 24rpx 160rpx;
 }
 
+.group {
+  margin-bottom: 32rpx;
+}
+
+.group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  padding: 8rpx 4rpx 20rpx;
+}
+
+.group-head .year {
+  font-size: 40rpx;
+  font-weight: 700;
+}
+
+.group-head .count {
+  font-size: 24rpx;
+  color: #9ca3af;
+}
+
 .list {
   display: flex;
   flex-direction: column;
