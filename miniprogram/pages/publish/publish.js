@@ -15,6 +15,11 @@ Page({
     latitude: null,
     longitude: null,
     date: today(),
+    hotel: '',
+    transportOptions: ['高铁', '火车', '自驾', '其他'],
+    transportIndex: -1, // 未选
+    transport: '',
+    transportOther: '',
     text: '',
     photos: [], // 已在云端的 fileID
     localPhotos: [], // 待上传的本地路径
@@ -42,6 +47,10 @@ Page({
               latitude: t.latitude != null ? t.latitude : null,
               longitude: t.longitude != null ? t.longitude : null,
               date: t.date || today(),
+              hotel: t.hotel || '',
+              transport: t.transport || '',
+              transportIndex: this.data.transportOptions.indexOf(t.transport || ''),
+              transportOther: t.transportOther || '',
               text: mine.text || '',
               photos: mine.photos || [],
             });
@@ -56,6 +65,14 @@ Page({
 
   onDateChange(e) {
     this.setData({ date: e.detail.value });
+  },
+
+  onTransportChange(e) {
+    const index = Number(e.detail.value);
+    this.setData({
+      transportIndex: index,
+      transport: this.data.transportOptions[index] || '',
+    });
   },
 
   // 地图选点（带经纬度，足迹页才能标在地图上）
@@ -120,6 +137,10 @@ Page({
         latitude: this.data.latitude,
         longitude: this.data.longitude,
         date: this.data.date,
+        hotel: this.data.hotel,
+        transport: this.data.transport,
+        transportOther:
+          this.data.transport === '其他' ? this.data.transportOther : '',
         text: this.data.text,
         photos,
       };

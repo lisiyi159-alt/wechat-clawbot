@@ -33,6 +33,40 @@
   </view>
 
   <view class="field">
+    <text class="label">住宿酒店</text>
+    <input
+      class="input"
+      placeholder="住在哪儿？（可选）"
+      value="{{hotel}}"
+      data-field="hotel"
+      bindinput="onInput"
+    />
+  </view>
+
+  <view class="field">
+    <text class="label">出行交通</text>
+    <picker
+      mode="selector"
+      range="{{transportOptions}}"
+      value="{{transportIndex}}"
+      bindchange="onTransportChange"
+    >
+      <view class="input picker">
+        {{transportIndex >= 0 ? transportOptions[transportIndex] : '请选择'}}
+      </view>
+    </picker>
+    <input
+      wx:if="{{transport === '其他'}}"
+      class="input"
+      style="margin-top: 16rpx"
+      placeholder="请填写出行方式"
+      value="{{transportOther}}"
+      data-field="transportOther"
+      bindinput="onInput"
+    />
+  </view>
+
+  <view class="field">
     <text class="label">游记（会署上你的称呼）</text>
     <textarea
       class="textarea"

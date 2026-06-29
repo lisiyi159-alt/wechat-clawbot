@@ -54,6 +54,9 @@ exports.main = async (event) => {
       latitude: event.latitude != null ? event.latitude : null,
       longitude: event.longitude != null ? event.longitude : null,
       date: event.date || '',
+      hotel: event.hotel || '',
+      transport: event.transport || '',
+      transportOther: event.transportOther || '',
       entries: [entry],
       cover: computeCover([entry]),
       createdAt: db.serverDate(),
@@ -82,6 +85,12 @@ exports.main = async (event) => {
         latitude: event.latitude !== undefined ? event.latitude : trip.latitude,
         longitude: event.longitude !== undefined ? event.longitude : trip.longitude,
         date: event.date !== undefined ? event.date : trip.date,
+        hotel: event.hotel !== undefined ? event.hotel : trip.hotel,
+        transport: event.transport !== undefined ? event.transport : trip.transport,
+        transportOther:
+          event.transportOther !== undefined
+            ? event.transportOther
+            : trip.transportOther,
         entries,
         cover: computeCover(entries),
         updatedAt: db.serverDate(),

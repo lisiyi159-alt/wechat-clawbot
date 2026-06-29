@@ -5,6 +5,10 @@
       <text wx:if="{{trip.location}}">📍 {{trip.location}}</text>
       <text wx:if="{{trip.date}}">🗓 {{trip.date}}</text>
     </view>
+    <view class="meta" wx:if="{{trip.hotel || trip.transport}}">
+      <text wx:if="{{trip.hotel}}">🏨 {{trip.hotel}}</text>
+      <text wx:if="{{trip.transport}}">🚆 {{trip.transport === '其他' ? trip.transportOther : trip.transport}}</text>
+    </view>
   </view>
 
   <!-- 多位家人的接力记录 -->
