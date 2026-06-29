@@ -19,27 +19,46 @@ function computeCover(entries) {
 // 云函数内是管理员权限，即使存储权限是「仅创建者可读写」，
 // 也能为所有家人生成可访问的图片链接（无需付费改权限）。
 async function attachUrls(list) {
-  const ids = [];
+  // 默认先用原始 fileID 兜底，保证即使取链接失败也不影响列表返回
   list.forEach((t) => {
-    if (t.cover) ids.push(t.cover);
-    (t.entries || []).forEach((e) =>
-      (e.photos || []).forEach((p) => ids.push(p))
-    );
-  });
-  const uniq = [...new Set(ids)];
-  const map = {};
-  if (uniq.length) {
-    const r = await cloud.getTempFileURL({ fileList: uniq });
-    (r.fileList || []).forEach((f) => {
-      if (f.tempFileURL) map[f.fileID] = f.tempFileURL;
-    });
-  }
-  list.forEach((t) => {
-    t.coverUrl = t.cover ? map[t.cover] || t.cover : '';
+    t.coverUrl = t.cover || '';
     (t.entries || []).forEach((e) => {
-      e.photoUrls = (e.photos || []).map((p) => map[p] || p);
+      e.photoUrls = e.photos || [];
     });
   });
+
+  try {
+    const ids = [];
+    list.forEach((t) => {
+      if (t.cover) ids.push(t.cover);
+      (t.entries || []).forEach((e) =>
+        (e.photos || []).forEach((p) => ids.push(p))
+      );
+    });
+    const uniq = [...new Set(ids)].filter(
+      (x) => typeof x === 'string' && x.indexOf('cloud://') === 0
+    );
+
+    const map = {};
+    // getTempFileURL 单次最多 50 个，分批处理
+    for (let i = 0; i < uniq.length; i += 50) {
+      const batch = uniq.slice(i, i + 50);
+      const r = await cloud.getTempFileURL({ fileList: batch });
+      (r.fileList || []).forEach((f) => {
+        if (f.tempFileURL) map[f.fileID] = f.tempFileURL;
+      });
+    }
+
+    list.forEach((t) => {
+      if (t.cover && map[t.cover]) t.coverUrl = map[t.cover];
+      (t.entries || []).forEach((e) => {
+        e.photoUrls = (e.photos || []).map((p) => map[p] || p);
+      });
+    });
+  } catch (err) {
+    // 取临时链接失败时，保留上面的 fileID 兜底，列表照常返回
+    console.error('attachUrls failed', err);
+  }
   return list;
 }
 
