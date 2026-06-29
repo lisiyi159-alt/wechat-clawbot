@@ -1,0 +1,62 @@
+.page {
+  padding: 24rpx 24rpx 160rpx;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.cover {
+  width: 100%;
+  height: 320rpx;
+  display: block;
+  background: #e5e7eb;
+}
+
+.cover.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96rpx;
+}
+
+.card-body {
+  padding: 24rpx;
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.meta {
+  margin-top: 12rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+  display: flex;
+  gap: 20rpx;
+}
+
+.fab {
+  position: fixed;
+  right: 48rpx;
+  bottom: 64rpx;
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  font-size: 64rpx;
+  line-height: 100rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(37, 99, 235, 0.4);
+}

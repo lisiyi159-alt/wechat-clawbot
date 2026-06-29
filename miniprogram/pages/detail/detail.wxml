@@ -1,0 +1,31 @@
+<view class="detail" wx:if="{{trip}}">
+  <view class="head">
+    <view class="title">{{trip.title}}</view>
+    <view class="meta">
+      <text wx:if="{{trip.location}}">📍 {{trip.location}}</text>
+      <text wx:if="{{trip.date}}">🗓 {{trip.date}}</text>
+    </view>
+  </view>
+
+  <view class="content" wx:if="{{trip.content}}">{{trip.content}}</view>
+
+  <view class="photos">
+    <image
+      wx:for="{{trip.photos}}"
+      wx:key="*this"
+      class="photo"
+      src="{{item}}"
+      mode="widthFix"
+      bindtap="preview"
+      data-src="{{item}}"
+    />
+  </view>
+
+  <view class="actions">
+    <button class="action export" bindtap="exportTrip">⬇ 导出留存</button>
+    <button class="action edit" wx:if="{{isAdmin}}" bindtap="edit">编辑</button>
+  </view>
+</view>
+
+<view wx:elif="{{loading}}" class="empty">加载中…</view>
+<view wx:else class="empty">没有找到这段旅行</view>

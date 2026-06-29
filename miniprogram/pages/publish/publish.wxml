@@ -1,0 +1,66 @@
+<view class="form">
+  <view class="field">
+    <text class="label">标题</text>
+    <input
+      class="input"
+      placeholder="这次去了哪里？"
+      value="{{title}}"
+      data-field="title"
+      bindinput="onInput"
+    />
+  </view>
+
+  <view class="field">
+    <text class="label">地点</text>
+    <input
+      class="input"
+      placeholder="城市 / 景点（可选）"
+      value="{{location}}"
+      data-field="location"
+      bindinput="onInput"
+    />
+  </view>
+
+  <view class="field">
+    <text class="label">日期</text>
+    <picker mode="date" value="{{date}}" bindchange="onDateChange">
+      <view class="input picker">{{date}}</view>
+    </picker>
+  </view>
+
+  <view class="field">
+    <text class="label">游记</text>
+    <textarea
+      class="textarea"
+      placeholder="写下这次旅行的故事和感受…"
+      value="{{content}}"
+      data-field="content"
+      bindinput="onInput"
+      auto-height
+    />
+  </view>
+
+  <view class="field">
+    <text class="label">照片</text>
+    <view class="photo-grid">
+      <view class="thumb" wx:for="{{photos}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" />
+        <view class="del" data-index="{{index}}" bindtap="removeUploaded">×</view>
+      </view>
+      <view class="thumb" wx:for="{{localPhotos}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" />
+        <view class="del" data-index="{{index}}" bindtap="removeLocal">×</view>
+      </view>
+      <view class="thumb add" bindtap="chooseImage">＋</view>
+    </view>
+  </view>
+
+  <button
+    class="submit btn-primary"
+    bindtap="submit"
+    loading="{{submitting}}"
+    disabled="{{submitting}}"
+  >
+    保存
+  </button>
+</view>

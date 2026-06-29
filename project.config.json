@@ -1,0 +1,17 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "projectname": "travel-journal",
+  "appid": "REPLACE_WITH_YOUR_APPID",
+  "description": "家庭旅行手账小程序",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "nodeModules": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "latest"
+}
