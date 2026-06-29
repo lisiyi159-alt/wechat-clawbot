@@ -7,6 +7,9 @@
   </view>
 
   <view class="groups" wx:else>
+    <view class="topbar">
+      <text class="export-all" bindtap="exportAll">⬇ 一键导出全部</text>
+    </view>
     <view class="group" wx:for="{{groups}}" wx:key="year" wx:for-item="group">
       <view class="group-head">
         <text class="year">{{group.year}}</text>
