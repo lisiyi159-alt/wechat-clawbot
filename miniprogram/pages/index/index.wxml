@@ -43,7 +43,7 @@
             <image
               wx:if="{{item.cover}}"
               class="cover"
-              src="{{item.cover}}"
+              src="{{item.coverUrl || item.cover}}"
               mode="aspectFill"
             />
             <view wx:else class="cover placeholder">🏞️</view>

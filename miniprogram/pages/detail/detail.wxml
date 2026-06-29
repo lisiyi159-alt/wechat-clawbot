@@ -27,9 +27,9 @@
         </view>
       </view>
       <view class="entry-text" wx:if="{{entry.text}}">{{entry.text}}</view>
-      <view class="entry-photos" wx:if="{{entry.photos.length}}">
+      <view class="entry-photos" wx:if="{{entry.photoUrls.length}}">
         <image
-          wx:for="{{entry.photos}}"
+          wx:for="{{entry.photoUrls}}"
           wx:for-item="p"
           wx:key="*this"
           class="photo"
@@ -37,7 +37,7 @@
           mode="widthFix"
           bindtap="preview"
           data-src="{{p}}"
-          data-urls="{{entry.photos}}"
+          data-urls="{{entry.photoUrls}}"
         />
       </view>
     </view>

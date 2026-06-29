@@ -42,17 +42,7 @@ Page({
           canEdit: trip.openid === my || app.globalData.role === 'admin',
         });
         wx.setNavigationBarTitle({ title: trip.title || '旅行' });
-
-        if (trip.cover) {
-          wx.cloud
-            .getTempFileURL({ fileList: [trip.cover] })
-            .then((r) => {
-              const url =
-                r.fileList && r.fileList[0] && r.fileList[0].tempFileURL;
-              if (url) this.setData({ shareImage: url });
-            })
-            .catch(() => {});
-        }
+        this.setData({ shareImage: trip.coverUrl || '' });
       })
       .catch(() => wx.showToast({ title: '加载失败', icon: 'none' }));
   },

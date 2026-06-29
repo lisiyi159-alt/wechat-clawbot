@@ -15,6 +15,34 @@ function computeCover(entries) {
   return '';
 }
 
+// 把云文件 ID 批量换成临时 https 链接。
+// 云函数内是管理员权限，即使存储权限是「仅创建者可读写」，
+// 也能为所有家人生成可访问的图片链接（无需付费改权限）。
+async function attachUrls(list) {
+  const ids = [];
+  list.forEach((t) => {
+    if (t.cover) ids.push(t.cover);
+    (t.entries || []).forEach((e) =>
+      (e.photos || []).forEach((p) => ids.push(p))
+    );
+  });
+  const uniq = [...new Set(ids)];
+  const map = {};
+  if (uniq.length) {
+    const r = await cloud.getTempFileURL({ fileList: uniq });
+    (r.fileList || []).forEach((f) => {
+      if (f.tempFileURL) map[f.fileID] = f.tempFileURL;
+    });
+  }
+  list.forEach((t) => {
+    t.coverUrl = t.cover ? map[t.cover] || t.cover : '';
+    (t.entries || []).forEach((e) => {
+      e.photoUrls = (e.photos || []).map((p) => map[p] || p);
+    });
+  });
+  return list;
+}
+
 // 一段旅行可由多位家人接力记录：
 //   trip.entries = [{ openid, name, text, photos[], createdAt }]
 //   第一条是创建者的主记录，后续为他人的「补充」
@@ -30,11 +58,13 @@ exports.main = async (event) => {
       .orderBy('createdAt', 'desc')
       .limit(100)
       .get();
+    await attachUrls(res.data);
     return { ok: true, data: res.data };
   }
 
   if (action === 'get') {
     const res = await trips.doc(event.id).get();
+    await attachUrls([res.data]);
     return { ok: true, data: res.data };
   }
 
