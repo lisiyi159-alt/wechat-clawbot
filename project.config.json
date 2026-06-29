@@ -2,7 +2,7 @@
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",
   "projectname": "travel-journal",
-  "appid": "REPLACE_WITH_YOUR_APPID",
+  "appid": "wxff17bbdefb0f67f2",
   "description": "家庭旅行手账小程序",
   "setting": {
     "urlCheck": false,
