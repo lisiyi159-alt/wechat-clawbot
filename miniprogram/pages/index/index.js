@@ -5,7 +5,35 @@ Page({
   data: {
     trips: [],
     groups: [], // 按年份分组：[{ year, items: [] }]
+    keyword: '',
     loading: true,
+  },
+
+  // 按关键词过滤（标题/地点/日期/住宿/交通），再重建分组
+  applyFilter() {
+    const kw = (this.data.keyword || '').trim().toLowerCase();
+    const all = this.data.trips;
+    const filtered = !kw
+      ? all
+      : all.filter((t) => {
+          const tr =
+            t.transport === '其他' ? t.transportOther || '' : t.transport || '';
+          const hay = `${t.title || ''} ${t.location || ''} ${t.date || ''} ${
+            t.hotel || ''
+          } ${tr}`.toLowerCase();
+          return hay.indexOf(kw) > -1;
+        });
+    this.setData({ groups: this.buildGroups(filtered) });
+  },
+
+  onSearchInput(e) {
+    this.setData({ keyword: e.detail.value });
+    this.applyFilter();
+  },
+
+  clearSearch() {
+    this.setData({ keyword: '' });
+    this.applyFilter();
   },
 
   // 列表已按日期倒序，这里按年份切分成组
@@ -40,8 +68,8 @@ Page({
       )
       .then((res) => {
         if (res && res.result && res.result.ok) {
-          const trips = res.result.data;
-          this.setData({ trips, groups: this.buildGroups(trips) });
+          this.setData({ trips: res.result.data });
+          this.applyFilter();
           // 列表正常显示后，检查是否该提醒备份
           checkBackupReminder();
         }

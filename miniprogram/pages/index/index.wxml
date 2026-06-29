@@ -1,46 +1,64 @@
 <view class="page">
   <view wx:if="{{loading}}" class="empty">加载中…</view>
 
-  <view wx:elif="{{trips.length === 0}}" class="empty">
-    <text>还没有旅行记录</text>
-    <text class="sub">点右下角 ＋ 写下第一段旅程</text>
-  </view>
-
-  <view class="groups" wx:else>
-    <view class="topbar">
-      <text class="export-all" bindtap="exportAll">⬇ 一键导出全部</text>
+  <block wx:else>
+    <view class="search" wx:if="{{trips.length}}">
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        placeholder="搜索地点或日期，如 莫干山、2026-06"
+        confirm-type="search"
+      />
+      <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">✕</text>
     </view>
-    <view class="group" wx:for="{{groups}}" wx:key="year" wx:for-item="group">
-      <view class="group-head">
-        <text class="year">{{group.year}}</text>
-        <text class="count">{{group.items.length}} 段旅行</text>
+
+    <view wx:if="{{trips.length === 0}}" class="empty">
+      <text>还没有旅行记录</text>
+      <text class="sub">点右下角 ＋ 写下第一段旅程</text>
+    </view>
+
+    <view wx:elif="{{groups.length === 0}}" class="empty">
+      <text>没有匹配的旅行</text>
+      <text class="sub">换个地点或日期试试</text>
+    </view>
+
+    <view class="groups" wx:else>
+      <view class="topbar">
+        <text class="export-all" bindtap="exportAll">⬇ 一键导出全部</text>
       </view>
-      <view class="list">
-        <view
-          class="card"
-          wx:for="{{group.items}}"
-          wx:key="_id"
-          bindtap="goDetail"
-          data-id="{{item._id}}"
-        >
-          <image
-            wx:if="{{item.cover}}"
-            class="cover"
-            src="{{item.cover}}"
-            mode="aspectFill"
-          />
-          <view wx:else class="cover placeholder">🏞️</view>
-          <view class="card-body">
-            <view class="title">{{item.title}}</view>
-            <view class="meta">
-              <text wx:if="{{item.location}}">📍{{item.location}}</text>
-              <text wx:if="{{item.date}}" class="date">{{item.date}}</text>
+      <view class="group" wx:for="{{groups}}" wx:key="year" wx:for-item="group">
+        <view class="group-head">
+          <text class="year">{{group.year}}</text>
+          <text class="count">{{group.items.length}} 段旅行</text>
+        </view>
+        <view class="list">
+          <view
+            class="card"
+            wx:for="{{group.items}}"
+            wx:key="_id"
+            bindtap="goDetail"
+            data-id="{{item._id}}"
+          >
+            <image
+              wx:if="{{item.cover}}"
+              class="cover"
+              src="{{item.cover}}"
+              mode="aspectFill"
+            />
+            <view wx:else class="cover placeholder">🏞️</view>
+            <view class="card-body">
+              <view class="title">{{item.title}}</view>
+              <view class="meta">
+                <text wx:if="{{item.location}}">📍{{item.location}}</text>
+                <text wx:if="{{item.date}}" class="date">{{item.date}}</text>
+              </view>
             </view>
           </view>
         </view>
       </view>
     </view>
-  </view>
+  </block>
 
   <view class="fab" bindtap="goPublish">＋</view>
 </view>
