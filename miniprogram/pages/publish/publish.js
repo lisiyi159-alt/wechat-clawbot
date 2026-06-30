@@ -16,7 +16,7 @@ Page({
     longitude: null,
     date: today(),
     hotel: '',
-    transportOptions: ['高铁', '火车', '自驾', '其他'],
+    transportOptions: ['高铁', '飞机', '自驾', '其他'],
     transportIndex: -1, // 未选
     transport: '',
     transportOther: '',
