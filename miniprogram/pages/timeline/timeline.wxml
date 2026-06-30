@@ -1,0 +1,26 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="empty">加载中…</view>
+
+  <view wx:elif="{{trips.length === 0}}" class="empty">
+    <text>还没有旅行记录</text>
+  </view>
+
+  <view class="timeline" wx:else>
+    <view
+      class="node"
+      wx:for="{{trips}}"
+      wx:key="_id"
+      bindtap="goDetail"
+      data-id="{{item._id}}"
+    >
+      <view class="axis">
+        <view class="dot"></view>
+      </view>
+      <view class="content">
+        <view class="date">{{item.date || '未标注日期'}}</view>
+        <view class="place">{{item.location || item.title}}</view>
+        <view class="title" wx:if="{{item.location}}">{{item.title}}</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/timeline/timeline",
     "pages/map/map",
     "pages/detail/detail",
     "pages/publish/publish",
@@ -18,6 +19,7 @@
     "backgroundColor": "#ffffff",
     "list": [
       { "pagePath": "pages/index/index", "text": "手账" },
+      { "pagePath": "pages/timeline/timeline", "text": "时间轴" },
       { "pagePath": "pages/map/map", "text": "足迹" }
     ]
   },

@@ -1,0 +1,75 @@
+.page {
+  padding: 32rpx 32rpx 64rpx;
+}
+
+.timeline {
+  padding-left: 8rpx;
+}
+
+.node {
+  display: flex;
+}
+
+/* 左侧竖线 + 圆点 */
+.axis {
+  position: relative;
+  width: 48rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.axis::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3rpx;
+  background: #d1d5db;
+}
+
+/* 第一个点上方不画线 */
+.node:first-child .axis::before {
+  top: 18rpx;
+}
+
+/* 最后一个点下方不画线 */
+.node:last-child .axis::before {
+  bottom: auto;
+  height: 18rpx;
+}
+
+.dot {
+  position: relative;
+  z-index: 1;
+  width: 22rpx;
+  height: 22rpx;
+  margin-top: 8rpx;
+  border-radius: 50%;
+  background: #2563eb;
+  border: 4rpx solid #eef2ff;
+}
+
+.content {
+  flex: 1;
+  padding: 0 0 48rpx 24rpx;
+}
+
+.date {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.place {
+  margin-top: 6rpx;
+  font-size: 32rpx;
+  color: #1f2937;
+}
+
+.title {
+  margin-top: 4rpx;
+  font-size: 26rpx;
+  color: #9ca3af;
+}
