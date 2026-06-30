@@ -93,7 +93,7 @@ Page({
 
   chooseImage() {
     wx.chooseMedia({
-      count: 9,
+      count: 20,
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
       success: (res) => {
