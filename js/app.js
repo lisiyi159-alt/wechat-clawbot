@@ -31,16 +31,22 @@
   $("asOf").textContent = "数据截至 " + (m.asOf || "--");
   $("footerMeta").textContent =
     (m.reviewPeriod ? m.reviewPeriod + " · " : "") + (m.author || "");
-  if (m.placeholder) $("placeholderBanner").classList.remove("hidden");
+  if (m.dataNote) {
+    var banner = $("placeholderBanner");
+    banner.querySelector(".wrap").textContent = m.dataNote;
+    banner.classList.remove("hidden");
+  }
 
   // ---- 一、大盘指数 ----
   function indexCard(it) {
-    var d = dirClass(it.change);
-    var arrow = it.change > 0 ? "▲" : it.change < 0 ? "▼" : "—";
+    var hasChg = typeof it.change === "number";
+    var d = hasChg ? dirClass(it.change) : "";
+    var arrow = !hasChg ? "" : it.change > 0 ? "▲" : it.change < 0 ? "▼" : "—";
+    var chg = hasChg ? (arrow + " " + fmtPct(it.change)) : "—";
     return el("div", "idx-card",
       '<div class="name">' + it.name + ' <span class="cell-code">' + (it.code || "") + '</span></div>' +
       '<div class="value">' + fmtNum(it.value) + '</div>' +
-      '<div class="chg ' + d + '">' + arrow + " " + fmtPct(it.change) + '</div>'
+      '<div class="chg ' + d + '">' + chg + '</div>'
     );
   }
   (D.indices && D.indices.aShare || []).forEach(function (it) { $("aShareCards").appendChild(indexCard(it)); });

@@ -53,9 +53,9 @@ code {
 }
 .header-meta .muted { color: rgba(255,255,255,.8); margin-top: 4px; }
 
-/* Banner */
-.banner { background: #fff8e6; border-bottom: 1px solid #ffe8a3; color: #7a5b00; font-size: 13.5px; padding: 10px 0; }
-.banner code { background: rgba(0,0,0,.08); }
+/* Banner（中性信息提示） */
+.banner { background: #eef5ff; border-bottom: 1px solid #cfe0fb; color: #2a4d80; font-size: 12.5px; padding: 9px 0; }
+.banner code { background: rgba(0,0,0,.06); }
 
 /* Subnav */
 .subnav { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
@@ -119,6 +119,7 @@ section { margin-top: 34px; scroll-margin-top: 60px; }
 .st-递表 { background: #e7f0ff; color: #1c5fd6; }
 .st-聆讯中 { background: #fff3e0; color: #b8690a; }
 .st-已通过聆讯 { background: var(--green-soft); color: var(--green-dark); }
+.st-已上市 { background: #e6f4ea; color: #1b7a3d; }
 .st-招股中 { background: #fce8f0; color: #c2255c; }
 .board-tag { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #eef1f4; color: #495159; font-size: 11px; }
 
