@@ -91,14 +91,21 @@ window.DASHBOARD = {
   // status: 递表 / 聆讯中 / 已通过聆讯 / 招股中 / 已上市；board: 主板 / 18A / 18C
   ipoQueue: {
     summary:
-      "港股医疗 IPO 延续「大年」：据投资界/医药魔方等统计，2026 年初港股+A 股在审排队医疗企业约 127 家（港股约 92、A 股约 35），" +
-      "医疗健康约占港交所递表的三分之一；上半年已有约 10 家生物医药企业登陆港交所。以下为部分近期上市/在审标的（在审具体名单建议用 `npm run scrape` 从披露易/公众号更新）。",
+      "港股医疗 IPO 延续「大年」：据医药魔方/投资界等统计，截至 2026/6/17 港交所排队 IPO 的医疗保健企业约 91 家" +
+      "（医药生物约 65、医疗器械与服务约 26），约占递表企业的三分之一；上半年已有约 10 家生物医药登陆港交所。" +
+      "以下为部分在审/近期上市标的（在审名单更新建议用 `npm run scrape` 抓披露易/医药魔方等）。",
     companies: [
+      // —— 在审（递表 / 聆讯）——
+      { name: "和美药业-B", board: "18A", status: "递表", sponsor: "国投证券", filedAt: "2026-06-08", note: "自免/肿瘤生物药，第 3 次递表" },
+      { name: "高光制药-B", board: "18A", status: "递表", sponsor: "中金/招银国际", filedAt: "2026-06-08", note: "自免/神经退行创新药，第 2 次递表" },
+      { name: "真健康医疗-B", board: "18A", status: "已通过聆讯", sponsor: "中金/星展", filedAt: "2026-06-12", note: "未盈利创新医疗（18A）" },
+      { name: "镁信健康", board: "主板", status: "递表", sponsor: "—", filedAt: "2026 更新", note: "医药多元支付平台（更新招股书）" },
+      // —— 近期已上市（参考）——
+      { name: "恒瑞医药", board: "主板", status: "已上市", sponsor: "摩根士丹利/花旗/华泰国际", filedAt: "2026-05-23", note: "A+H，医药龙头，首日 +25%" },
+      { name: "派格生物医药", board: "18A", status: "已上市", sponsor: "—", filedAt: "2026-05-27", note: "GLP-1/代谢" },
       { name: "瑞博生物", board: "18A", status: "已上市", sponsor: "—", filedAt: "2026 H1", note: "小核酸/RNA 疗法" },
       { name: "精锋医疗", board: "主板", status: "已上市", sponsor: "—", filedAt: "2026 H1", note: "手术机器人" },
       { name: "卓正医疗", board: "主板", status: "已上市", sponsor: "—", filedAt: "2026 H1", note: "高端医疗服务/诊所" },
-      { name: "（在审示例）某创新药企", board: "18A", status: "聆讯中", sponsor: "—", filedAt: "2026 Q2", note: "ADC / 双抗，待披露易核实" },
-      { name: "（在审示例）某医疗 AI", board: "18C", status: "递表", sponsor: "—", filedAt: "2026 Q2", note: "医学影像 AI，待披露易核实" },
     ],
   },
 
