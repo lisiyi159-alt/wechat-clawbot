@@ -76,6 +76,23 @@
 
   // ---- 三、在会排队 ----
   var ipo = D.ipoQueue || {};
+  // 港股 IPO 市场概览数据条
+  if (ipo.market) {
+    var mk = ipo.market, box = $("ipoMarket");
+    var head = el("div", "stat-head",
+      '<span class="stat-title">港股 IPO 市场概览 · ' + (mk.period || "") + "</span>" +
+      (mk.source ? '<span class="muted small">来源：' + mk.source + "</span>" : ""));
+    box.appendChild(head);
+    var grid = el("div", "stat-grid");
+    (mk.stats || []).forEach(function (s) {
+      grid.appendChild(el("div", "stat-card",
+        '<div class="stat-value">' + s.value + "</div>" +
+        '<div class="stat-label">' + s.label + "</div>" +
+        (s.sub ? '<div class="stat-sub">' + s.sub + "</div>" : "")));
+    });
+    box.appendChild(grid);
+    if (mk.note) box.appendChild(el("p", "stat-note", mk.note));
+  }
   $("ipoSummary").textContent = ipo.summary || "";
   (ipo.companies || []).forEach(function (c) {
     var tr = el("tr", null,
