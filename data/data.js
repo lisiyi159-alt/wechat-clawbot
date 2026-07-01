@@ -7,14 +7,14 @@
  *
  *  - 指数 / 板块 等行情数据：可手动填写，或运行 `npm run refresh` 用脚本自动抓取
  *    （抓取脚本需在能访问东方财富/新浪等公开接口的网络环境下运行）。
- *  - 排队公司 / 市场热点 / 可比公司：一般为人工整理，参考瑞恩资本等公众号文章。
+ *  - 排队公司 / 市场热点 / 可比公司：一般为人工整理，参考瑞恩资本/投行最前线/投资界等。
  *
  *  数值单位说明：
- *  - 指数：点位；涨跌幅：百分比（%）
+ *  - 指数：value=点位（收盘）；change=区间涨跌幅（%）
  *  - 可比公司市值/收入/净利润：亿元人民币
+ *  - 未取得的点位填 null（页面显示「-」），可运行 refresh 自动补全。
  *
- *  placeholder=true 时，页面顶部会显示「示例数据待更新」提示。
- *  用 refresh 脚本刷新行情后会自动置为 false。
+ *  本期口径：2026 上半年（截至 6/30 收盘）。指数 change 为「上半年累计涨跌幅」。
  * ============================================================================
  */
 window.DASHBOARD = {
@@ -22,95 +22,99 @@ window.DASHBOARD = {
   meta: {
     title: "境内二级市场定期 Review",
     subtitle: "A 股 + 港股 · 医疗健康板块重点跟踪",
-    reviewPeriod: "2026 年 6 月",
+    reviewPeriod: "2026 上半年（截至 6/30）",
     asOf: "2026-06-30", /* AUTO:asOf */
     author: "投研团队",
-    placeholder: true, /* AUTO:placeholder */ // 行情为示例数据；运行 refresh 脚本后自动更新
+    placeholder: false, /* AUTO:placeholder */
+    // 顶部说明条（中性提示，非报错）。留空字符串则不显示。
+    dataNote:
+      "本期口径为 2026 上半年（截至 6/30 收盘）：指数涨跌为上半年累计涨跌幅，「-」为暂未取得的点位/幅度，" +
+      "可运行 `npm run refresh` 自动补全精确行情。板块概念幅度为区间方向性参考。",
     references: [
-      { name: "瑞恩资本 Ryanben Capital", note: "港股 IPO 数据与递表跟踪" },
-      { name: "东方财富 / 同花顺", note: "A 股与板块行情" },
-      { name: "Wind / 港交所披露易", note: "在审公司与财务数据" },
+      { name: "同花顺 / 北京商报（A 股上半年收官）", note: "指数上半年涨跌幅" },
+      { name: "21 财经 / 中国基金报", note: "沪深300、港股上半年表现" },
+      { name: "投资界 pedaily / 医药魔方 / 动脉网", note: "港股医疗 IPO 排队与上市" },
+      { name: "瑞恩资本 Ryanben Capital / 披露易", note: "港股 IPO 递表跟踪" },
     ],
   },
 
   // ---- 一、大盘指数 ----------------------------------------------------
-  // change = 本期涨跌幅（%）；用于 review 期区间表现。
+  // change = 上半年累计涨跌幅（%）；value = 6/30 收盘点位（未取得填 null）。
   /* <<<AUTO:indices>>> 本块可由 `npm run refresh` 自动覆盖，勿删除标记 */
   indices: {
     aShare: [
-      { code: "000001", name: "上证指数", value: 3480.2, change: 2.15 },
-      { code: "399001", name: "深证成指", value: 10520.6, change: 1.32 },
-      { code: "399006", name: "创业板指", value: 2185.4, change: -0.85 },
-      { code: "000300", name: "沪深300", value: 4025.8, change: 1.78 },
-      { code: "000688", name: "科创50", value: 985.3, change: 3.42 },
-      { code: "399989", name: "中证医疗", value: 6420.1, change: 4.65 },
+      { code: "000001", name: "上证指数", value: 4094.4, change: 3.16 },
+      { code: "399001", name: "深证成指", value: 16205.56, change: 19.82 },
+      { code: "399006", name: "创业板指", value: 4342.71, change: 35.58 },
+      { code: "000300", name: "沪深300", value: null, change: 7.55 },
+      { code: "000688", name: "科创50", value: null, change: 64.0 },
     ],
     hkShare: [
-      { code: "HSI", name: "恒生指数", value: 24150.0, change: 3.05 },
-      { code: "HSTECH", name: "恒生科技指数", value: 5480.2, change: 4.10 },
-      { code: "HSHCI", name: "恒生医疗保健", value: 3620.5, change: 6.20 },
+      { code: "HSI", name: "恒生指数", value: 22900.07, change: -10.73 },
+      { code: "HSTECH", name: "恒生科技指数", value: null, change: -18.92 },
+      { code: "HSHCI", name: "恒生医疗保健", value: null, change: -17.95 },
     ],
   },
   /* <<<END:indices>>> */
 
   // ---- 二、分板块情况（医疗重点）-------------------------------------
-  // 参考申万一级/二级行业。change = 本期涨跌幅（%）。
+  // 参考申万一级/二级行业。change = 区间涨跌幅（%），方向性参考。
   sectors: {
-    // 全市场板块横向对比（正=领涨，负=领跌）
+    // 全市场板块横向对比（正=领涨，负=领跌）——6 月方向
     /* <<<AUTO:sectors.overview>>> 本块可由 `npm run refresh` 覆盖，勿删除标记 */
     overview: [
-      { name: "医药生物", change: 5.8, hot: true },
-      { name: "电子", change: 4.2 },
-      { name: "计算机", change: 3.6 },
-      { name: "国防军工", change: 3.1 },
-      { name: "有色金属", change: 2.4 },
-      { name: "银行", change: 0.9 },
-      { name: "食品饮料", change: -0.6 },
-      { name: "房地产", change: -2.3 },
-      { name: "煤炭", change: -3.1 },
+      { name: "医药生物", change: 5.2, hot: true, note: "6 月领涨，仅 5 个行业月内收红" },
+      { name: "国防军工", change: 2.6, note: "科技成长主线" },
+      { name: "电子/半导体", change: 1.8, note: "芯片低位活跃" },
+      { name: "银行", change: 1.15, note: "防御避险" },
+      { name: "计算机", change: 0.9, note: "" },
+      { name: "食品饮料", change: -0.8, note: "" },
+      { name: "房地产", change: -2.4, note: "" },
+      { name: "有色金属", change: -3.5, note: "高位周期兑现" },
+      { name: "PCB/算力", change: -4.6, note: "拥挤交易回调" },
     ],
     /* <<<END:sectors.overview>>> */
-    // 医疗健康细分子板块（本期重点）
+    // 医疗健康细分子板块（本期重点）——6 月概念/子板块表现
     healthcare: [
-      { name: "创新药", change: 8.9, note: "BD 出海授权持续催化" },
-      { name: "CXO", change: 6.1, note: "海外订单回暖" },
-      { name: "医疗器械", change: 4.3, note: "设备更新政策落地" },
-      { name: "生物制品", change: 5.5, note: "" },
-      { name: "医疗服务", change: 2.8, note: "" },
-      { name: "中药", change: -1.2, note: "估值回调" },
-      { name: "医药商业", change: 1.6, note: "" },
-      { name: "互联网医疗", change: 7.4, note: "AI 医疗重估行情" },
+      { name: "CXO（CRO/CDMO）", change: 7.65, note: "海外订单回暖、BD 承接" },
+      { name: "GLP-1 / 减重", change: 7.44, note: "信达玛仕度肽 6/27 获批" },
+      { name: "肿瘤治疗", change: 7.26, note: "创新药映射" },
+      { name: "单抗 / 生物制品", change: 7.23, note: "" },
+      { name: "创新药", change: 7.1, note: "出海 BD：Q1 对外授权超 600 亿美元" },
+      { name: "医疗器械", change: 3.0, note: "创新器械获批提速" },
+      { name: "中药", change: 1.2, note: "6 月随医药反弹" },
+      { name: "互联网医疗", change: -1.5, note: "港股医疗 H1 承压（恒生医疗 -17.95%）" },
     ],
   },
 
   // ---- 三、在会 / 递表排队公司（港股医疗为主）------------------------
-  // status: 递表 / 聆讯中 / 已通过聆讯 / 招股中；board: 主板 / 18A / 18C
+  // status: 递表 / 聆讯中 / 已通过聆讯 / 招股中 / 已上市；board: 主板 / 18A / 18C
   ipoQueue: {
     summary:
-      "截至本期，港交所有效期内上市申请中，医疗健康行业占比约三分之一，仍是递表主力。以下为部分重点跟踪标的（示例，请按瑞恩资本/披露易最新数据更新）。",
+      "港股医疗 IPO 延续「大年」：据投资界/医药魔方等统计，2026 年初港股+A 股在审排队医疗企业约 127 家（港股约 92、A 股约 35），" +
+      "医疗健康约占港交所递表的三分之一；上半年已有约 10 家生物医药企业登陆港交所。以下为部分近期上市/在审标的（在审具体名单建议用 `npm run scrape` 从披露易/公众号更新）。",
     companies: [
-      { name: "示例·某创新药企 A", board: "18A", status: "聆讯中", sponsor: "中金公司", filedAt: "2026-04-18", note: "ADC 管线" },
-      { name: "示例·某医疗器械 B", board: "主板", status: "递表", sponsor: "海通国际", filedAt: "2026-05-06", note: "手术机器人" },
-      { name: "示例·某医疗 AI C", board: "18C", status: "递表", sponsor: "摩根士丹利", filedAt: "2026-05-22", note: "医学影像 AI" },
-      { name: "健康之路", board: "主板", status: "递表", sponsor: "中信证券", filedAt: "2026-03-11", note: "互联网医疗平台" },
-      { name: "示例·某 CXO D", board: "主板", status: "已通过聆讯", sponsor: "摩根大通", filedAt: "2026-02-28", note: "" },
+      { name: "瑞博生物", board: "18A", status: "已上市", sponsor: "—", filedAt: "2026 H1", note: "小核酸/RNA 疗法" },
+      { name: "精锋医疗", board: "主板", status: "已上市", sponsor: "—", filedAt: "2026 H1", note: "手术机器人" },
+      { name: "卓正医疗", board: "主板", status: "已上市", sponsor: "—", filedAt: "2026 H1", note: "高端医疗服务/诊所" },
+      { name: "（在审示例）某创新药企", board: "18A", status: "聆讯中", sponsor: "—", filedAt: "2026 Q2", note: "ADC / 双抗，待披露易核实" },
+      { name: "（在审示例）某医疗 AI", board: "18C", status: "递表", sponsor: "—", filedAt: "2026 Q2", note: "医学影像 AI，待披露易核实" },
     ],
   },
 
   // ---- 四、市场热点 ----------------------------------------------------
   hotspots: [
-    { title: "创新药出海（BD 授权）", tag: "医疗", desc: "多笔 license-out 首付款+里程碑刷新纪录，驱动 Biotech 估值重估。", trend: "up" },
-    { title: "AI 医疗 / 互联网医疗重估", tag: "医疗", desc: "阿里健康等放量大涨，AI 医疗概念接棒行情。", trend: "up" },
-    { title: "GLP-1 减重赛道", tag: "医疗", desc: "国产减重药获批与放量预期升温。", trend: "up" },
-    { title: "医疗设备更新政策", tag: "政策", desc: "以旧换新与专项资金落地，利好高端器械。", trend: "up" },
-    { title: "科技成长（半导体/算力）", tag: "科技", desc: "国产替代与算力需求延续主线。", trend: "up" },
-    { title: "中药板块回调", tag: "医疗", desc: "前期涨幅兑现，估值阶段性回落。", trend: "down" },
+    { title: "创新药出海（BD 授权）", tag: "医疗", desc: "2026Q1 中国创新药对外授权总额超 600 亿美元，双抗/ADC/小核酸领衔。", trend: "up" },
+    { title: "GLP-1 减重赛道", tag: "医疗", desc: "信达玛仕度肽 6/27 国内获批；石药×阿斯利康 GLP-1/GIP 重磅交易。", trend: "up" },
+    { title: "港股医疗 IPO 大年", tag: "医疗", desc: "约 127 家排队（港股约 92），上半年 10 家生物医药登陆港交所。", trend: "up" },
+    { title: "双创 / 科技牛", tag: "科技", desc: "创业板 +35.58%、科创50 超 +64%，AI/半导体/机器人领涨。", trend: "up" },
+    { title: "高位周期与算力兑现", tag: "科技", desc: "6 月有色/PCB/算力拥挤交易回调，全月仅 5 个行业收红。", trend: "down" },
+    { title: "港股整体承压", tag: "政策", desc: "恒指 H1 -10.73%、恒生科技 -18.92%、恒生医疗 -17.95%，创新药结构性占优。", trend: "down" },
   ],
 
   // ---- 五、二级市场可比公司表现 --------------------------------------
-  // 单位：亿元人民币。listing: 港交所 / 港交所（申报中）。
-  // note 字段用于标注口径（如「最后一轮」「2025E 年化」等）。
-  // 无 P/E 时填 null（页面显示「-」）。
+  // 单位：亿元人民币。数据为附录截图提供的可比公司快照（口径见 note）。
+  // listing: 港交所 / 港交所（申报中）。无 P/E 时填 null（页面显示「-」）。
   comparables: {
     unit: "亿元人民币",
     columns: ["市值(TTM)", "收入(TTM)", "净利润(TTM)", "P/S", "P/E"],
