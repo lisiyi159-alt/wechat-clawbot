@@ -106,6 +106,29 @@
     $("ipoTable").appendChild(tr);
   });
 
+  // 上半年医疗健康新股表
+  if (ipo.newListingsMed) {
+    var nm = ipo.newListingsMed, wrap = $("medNew");
+    wrap.appendChild(el("div", "stat-head",
+      '<span class="stat-title">' + (nm.title || "医疗健康新股") + "</span>" +
+      (nm.source ? '<span class="muted small">' + nm.source + "</span>" : "")));
+    var rows = (nm.items || []).map(function (c) {
+      return "<tr>" +
+        "<td><strong>" + c.name + "</strong>" + (c.code ? '<span class="cell-code"> ' + c.code + "</span>" : "") + "</td>" +
+        "<td>" + (c.region || "-") + "</td>" +
+        '<td class="num">' + (c.date || "-") + "</td>" +
+        '<td class="num">' + (c.funds == null ? "-" : fmtNum(c.funds)) + "</td>" +
+        "</tr>";
+    }).join("");
+    var tw = el("div", "table-wrap");
+    tw.innerHTML =
+      '<table class="data-table"><thead><tr>' +
+      "<th>公司名称</th><th>地区</th><th class=\"num\">上市日期</th><th class=\"num\">募资(亿港元)</th>" +
+      "</tr></thead><tbody>" + rows + "</tbody></table>";
+    wrap.appendChild(tw);
+    if (nm.note) wrap.appendChild(el("p", "stat-note", nm.note));
+  }
+
   // ---- 四、市场热点 ----
   (D.hotspots || []).forEach(function (h) {
     var arrow = h.trend === "up" ? "↑" : h.trend === "down" ? "↓" : "";
