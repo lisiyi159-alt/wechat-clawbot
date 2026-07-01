@@ -1,0 +1,14 @@
+{
+  "name": "wechat-clawbot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "境内二级市场（A股+港股，医疗健康重点）定期 review 看板",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "refresh": "node scripts/refresh.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

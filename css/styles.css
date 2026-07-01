@@ -1,0 +1,150 @@
+:root {
+  --green: #2f9e44;
+  --green-dark: #248239;
+  --green-soft: #ebf7ee;
+  --red: #e03131;
+  --ink: #1f2933;
+  --muted: #6b7684;
+  --line: #e6e9ee;
+  --bg: #f6f8fa;
+  --card: #ffffff;
+  --shadow: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.hidden { display: none !important; }
+code {
+  background: rgba(0,0,0,.06); padding: 1px 6px; border-radius: 5px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 12.5px;
+}
+
+/* Header */
+.site-header {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: #fff; padding: 22px 0;
+}
+.header-inner { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark {
+  width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,.18);
+  display: grid; place-items: center; font-size: 22px; font-weight: 700;
+}
+.site-header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+.site-header .muted { color: rgba(255,255,255,.85); margin: 2px 0 0; font-size: 13.5px; }
+.header-meta { text-align: right; }
+.period-chip {
+  display: inline-block; background: rgba(255,255,255,.2); padding: 5px 14px;
+  border-radius: 999px; font-weight: 600; font-size: 14px;
+}
+.header-meta .muted { color: rgba(255,255,255,.8); margin-top: 4px; }
+
+/* Banner */
+.banner { background: #fff8e6; border-bottom: 1px solid #ffe8a3; color: #7a5b00; font-size: 13.5px; padding: 10px 0; }
+.banner code { background: rgba(0,0,0,.08); }
+
+/* Subnav */
+.subnav { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+.subnav-inner { display: flex; gap: 6px; overflow-x: auto; }
+.subnav a {
+  padding: 13px 14px; color: var(--muted); text-decoration: none; font-size: 14px;
+  font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent;
+}
+.subnav a:hover { color: var(--green-dark); border-bottom-color: var(--green); }
+
+/* Sections */
+main { padding-bottom: 40px; }
+section { margin-top: 34px; scroll-margin-top: 60px; }
+.section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; border-left: 4px solid var(--green); padding-left: 12px; }
+.section-head h2 { margin: 0; font-size: 19px; }
+.group-title { font-size: 14px; color: var(--muted); margin: 18px 0 10px; font-weight: 600; }
+
+/* Index cards */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.idx-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); }
+.idx-card .name { font-size: 13.5px; color: var(--muted); }
+.idx-card .value { font-size: 24px; font-weight: 700; margin: 4px 0 2px; letter-spacing: -.5px; }
+.idx-card .chg { font-size: 14px; font-weight: 600; }
+.up { color: var(--red); }      /* A股习惯：红涨 */
+.down { color: var(--green); }  /* 绿跌 */
+
+/* Sector bars */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+.panel-title { margin: 0 0 14px; font-size: 15px; }
+.pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; vertical-align: middle; }
+.pill-focus { background: var(--green-soft); color: var(--green-dark); }
+.bar-list { display: flex; flex-direction: column; gap: 9px; }
+.bar-row { display: grid; grid-template-columns: 92px 1fr 56px; align-items: center; gap: 10px; font-size: 13.5px; }
+.bar-row .lbl { color: var(--ink); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-row .lbl .n { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.bar-track { background: #f0f2f5; height: 16px; border-radius: 8px; position: relative; overflow: hidden; }
+.bar-fill { position: absolute; top: 0; bottom: 0; border-radius: 8px; }
+.bar-fill.pos { background: linear-gradient(90deg, #ff8787, var(--red)); left: 50%; }
+.bar-fill.neg { background: linear-gradient(90deg, var(--green), #8ce99a); right: 50%; }
+.bar-mid { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #d7dbe0; }
+.bar-val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Summary */
+.summary { background: var(--green-soft); border: 1px solid #cdeccf; color: #24512e; padding: 12px 16px; border-radius: 10px; font-size: 14px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); background: #fff; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+.data-table thead th { background: var(--green); color: #fff; text-align: left; padding: 12px 14px; font-weight: 600; white-space: nowrap; }
+.data-table thead th.num { text-align: right; }
+.data-table tbody td { padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.data-table tbody tr:nth-child(even) { background: #fafbfc; }
+.data-table tbody tr:hover { background: var(--green-soft); }
+.data-table td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cell-code { color: var(--muted); font-size: 11.5px; }
+.cell-note { color: var(--muted); font-size: 11px; display: block; }
+.comparables tfoot td { padding: 11px 14px; font-weight: 700; background: var(--green-soft); border-top: 2px solid var(--green); }
+.comparables tfoot td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.status-tag { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.st-递表 { background: #e7f0ff; color: #1c5fd6; }
+.st-聆讯中 { background: #fff3e0; color: #b8690a; }
+.st-已通过聆讯 { background: var(--green-soft); color: var(--green-dark); }
+.st-招股中 { background: #fce8f0; color: #c2255c; }
+.board-tag { display: inline-block; padding: 1px 7px; border-radius: 5px; background: #eef1f4; color: #495159; font-size: 11px; }
+
+/* Hotspots */
+.hotspot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.hotspot { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 15px 16px; box-shadow: var(--shadow); position: relative; }
+.hotspot .top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.hotspot .tag { font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.tag-医疗 { background: var(--green-soft); color: var(--green-dark); }
+.tag-政策 { background: #e7f0ff; color: #1c5fd6; }
+.tag-科技 { background: #f3e8ff; color: #7c3aed; }
+.hotspot h4 { margin: 0; font-size: 15px; }
+.hotspot p { margin: 0; font-size: 13px; color: var(--muted); }
+.trend { margin-left: auto; font-size: 15px; }
+.trend.up { color: var(--red); }
+.trend.down { color: var(--green); }
+
+/* Refs + footer */
+.ref-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 10px; }
+.ref-list li { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; }
+.ref-list li strong { color: var(--green-dark); }
+.site-footer { border-top: 1px solid var(--line); background: #fff; padding: 18px 0; margin-top: 30px; }
+.site-footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 12.5px; }
+
+@media (max-width: 760px) {
+  .two-col { grid-template-columns: 1fr; }
+  .site-header h1 { font-size: 19px; }
+  .header-meta { text-align: left; }
+}
