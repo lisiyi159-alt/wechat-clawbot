@@ -51,6 +51,36 @@ npm run refresh
 - 接口返回的是**最新交易日**涨跌幅快照；若需严格的 review **区间累计涨跌幅**，请在 `data/data.js` 中手动覆盖 `change` 字段。
 - `sectors.healthcare`、`ipoQueue`、`hotspots`、`comparables` 为人工整理，不会被脚本改动。
 
+### 抓取排队公司 / 市场热点素材（可选）
+
+`npm run scrape` 从三类来源抓取素材，产出**待人工确认**的候选到 `data/scraped.json`，
+并在终端打印可粘贴进 `data/data.js` 的 `ipoQueue` / `hotspots` 片段。
+
+来源在 **`scripts/sources.config.js`** 中配置，支持：
+
+| type | 用途 | 说明 |
+|------|------|------|
+| `hkexnews` | 港交所披露易「申請版本/新上市申请」 | 结构化、最权威，直接产出在审公司列表 |
+| `listing` | 列表/专栏页（瑞恩资本、投资界 pedaily 等） | 抓取页面文章链接后逐篇解析 |
+| `article` | 单篇文章（微信公众号 / pedaily 等） | 贴具体推文链接 |
+
+关于**公众号（投行最前线 / 投资界 等）**：微信公众号没有公开的文章列表接口、
+搜狗微信反爬严重，无法「自动发现」最新推文。稳定做法是把每期要 review 的
+**推文链接**贴进 `sources.config.js` 里 `type:"article"` 的 `urls`，脚本会抓取正文并
+自动抽取「疑似递表/在审公司」和「热点主题」候选。
+
+设计上脚本**不会直接覆盖已发布的 `data/data.js`**：公众号文本是定性素材，
+先落到 `data/scraped.json` 供你核实，确认后再誊抄，避免把未经核实的内容上线。
+
+抽取逻辑（HTML 解析、公司名/热点识别）有离线单测：
+
+```bash
+npm test
+```
+
+> 注意：抓取脚本同样需要能访问目标站点的网络；受限 / 代理环境下常见 403，请在本地网络运行。
+> 公司名/热点为**启发式识别，需人工确认**（板块、保荐人、口径等仍需核对披露易/原文）。
+
 ## 部署
 
 纯静态站点，可直接部署到 GitHub Pages / 对象存储 / 任意静态托管：把仓库根目录作为站点根即可（入口 `index.html`）。
@@ -63,6 +93,10 @@ css/styles.css      # 样式
 js/app.js           # 渲染逻辑（读取 window.DASHBOARD）
 data/data.js        # ★ 唯一数据源，每期 review 编辑此文件
 scripts/refresh.mjs # 行情自动抓取（东方财富接口）
+scripts/scrape.mjs  # 排队公司/热点素材抓取（披露易 + 公众号文章）
+scripts/sources.config.js  # ★ 抓取来源登记表（贴公众号文章链接）
+scripts/lib/extract.mjs    # HTML 解析与信息抽取（纯函数）
+scripts/test-extract.mjs   # 抽取逻辑离线单测（npm test）
 scripts/serve.mjs   # 零依赖本地静态服务器
 ```
 

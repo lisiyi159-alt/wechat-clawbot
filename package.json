@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node scripts/serve.mjs",
-    "refresh": "node scripts/refresh.mjs"
+    "refresh": "node scripts/refresh.mjs",
+    "scrape": "node scripts/scrape.mjs",
+    "test": "node scripts/test-extract.mjs"
   },
   "engines": {
     "node": ">=18"
